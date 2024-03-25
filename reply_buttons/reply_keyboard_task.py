@@ -2,26 +2,31 @@ from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from environs import Env
 
 # Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
 # полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
+env = Env()
+env.read_env()
+BOT_TOKEN = env.str("BOT_TOKEN")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 # Создаем список списков с кнопками
-keyboard: list[KeyboardButton] = [
-    KeyboardButton(text=str(i)) for i in range(1, 8)
+buttons: list[KeyboardButton] = [
+    KeyboardButton(text=str(i)) for i in range(1, 13)
 ]
 
 # Инициализируем билдер
 builder = ReplyKeyboardBuilder()
 
-builder.row(*keyboard, width=3)
+# builder.row(*buttons, width=3) # этот билдер построит клавиатуру с 3 кнопками в строке
+builder.add(*buttons)
+builder.adjust(4, 2, repeat=True) # этот билдер построит клавиатуру с повторяющимися строками 4 кнопки, 2 кнопки, затем опятьь 4 и 2
 
 # Создаем объект клавиатуры, добавляя в него кнопки
-my_keyboard: ReplyKeyboardMarkup = builder.as_markup(resize_keyboard=True)
+my_keyboard: ReplyKeyboardMarkup = builder.as_markup(resize_keyboard=True, one_time_keyboard=True)
 
 
 # Этот хэндлер будет срабатывать на команду "/start"
