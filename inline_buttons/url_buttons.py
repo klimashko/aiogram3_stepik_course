@@ -1,10 +1,12 @@
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command, CommandStart
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from environs import Env
 
-# Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
-# полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
+# Считываем "BOT TOKEN" HERE из переменных о
+env = Env() #Env() создает новый экземпляр класса Env, который предоставляет методы для работы с переменными среды.
+env.read_env() #загружает переменные среды из файла .env в объект env
+BOT_TOKEN = env.str("BOT_TOKEN") #присваивает переменной BOT_TOKEN значение переменной среды с именем BOT_TOKEN.
 
 # Создаем объекты бота и диспетчера
 bot = Bot(token=BOT_TOKEN)
@@ -42,7 +44,7 @@ url_button_3 = InlineKeyboardButton(
     text='Группа "Телеграм-боты на AIOgram"',
     url=f'tg://resolve?domain={group_name}'
 )
-user_id = 173901673
+user_id = 588952161 # это мой id тк по правилам тг не смог исмпользовать id автора курса, тк не сосотял с ним в переписке до этого
 url_button_4 = InlineKeyboardButton(
     text='Автор курса на Степике по телеграм-ботам',
     url=f'tg://user?id={user_id}'
