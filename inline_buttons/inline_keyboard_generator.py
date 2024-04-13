@@ -2,10 +2,14 @@ from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from environs import Env
 
-# Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
-# полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
+# Считываем "BOT TOKEN" из переменных окружения
+env = Env() #Env() создает новый экземпляр класса Env,
+# который предоставляет методы для работы с переменными среды.
+env.read_env() #загружает переменные среды из файла .env в объект env
+BOT_TOKEN = env.str("BOT_TOKEN") #присваивает переменной BOT_TOKEN
+# значение переменной среды с именем BOT_TOKEN.
 
 # Создаем объекты бота и диспетчера
 bot = Bot(token=BOT_TOKEN, parse_mode='HTML')
