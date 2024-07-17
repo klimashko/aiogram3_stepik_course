@@ -4,6 +4,7 @@ from aiogram import F, Router
 from aiogram.filters import Command, CommandStart
 from aiogram.types import CallbackQuery, Message
 from book_bot.database.database import user_dict_template, users_db
+from book_bot.services.adding_user_to_db import adding_user_to_db
 from book_bot.filters.filters import IsDelBookmarkCallbackData, IsDigitCallbackData
 from book_bot.keyboards.bookmarks_kb import (create_bookmarks_keyboard,
                                     create_edit_keyboard)
@@ -20,8 +21,9 @@ router = Router()
 @router.message(CommandStart())
 async def process_start_command(message: Message):
     await message.answer(LEXICON[message.text])
-    if message.from_user.id not in users_db:
-        users_db[message.from_user.id] = deepcopy(user_dict_template)
+    # if message.from_user.id not in users_db:
+    #     users_db[message.from_user.id] = deepcopy(user_dict_template)
+    adding_user_to_db(message)
 
 
 # Этот хэндлер будет срабатывать на команду "/help"
@@ -35,6 +37,7 @@ async def process_help_command(message: Message):
 # и отправлять пользователю первую страницу книги с кнопками пагинации
 @router.message(Command(commands='beginning'))
 async def process_beginning_command(message: Message):
+    adding_user_to_db(message)
     users_db[message.from_user.id]['page'] = 1
     text = book[users_db[message.from_user.id]['page']]
     await message.answer(
@@ -52,6 +55,7 @@ async def process_beginning_command(message: Message):
 # остановился в процессе взаимодействия с ботом
 @router.message(Command(commands='continue'))
 async def process_continue_command(message: Message):
+    adding_user_to_db(message)
     text = book[users_db[message.from_user.id]['page']]
     await message.answer(
         text=text,
@@ -68,6 +72,7 @@ async def process_continue_command(message: Message):
 # если они есть или сообщение о том, что закладок нет
 @router.message(Command(commands='bookmarks'))
 async def process_bookmarks_command(message: Message):
+    adding_user_to_db(message)
     if users_db[message.from_user.id]["bookmarks"]:
         await message.answer(
             text=LEXICON[message.text],
@@ -83,6 +88,7 @@ async def process_bookmarks_command(message: Message):
 # во время взаимодействия пользователя с сообщением-книгой
 @router.callback_query(F.data == 'forward')
 async def process_forward_press(callback: CallbackQuery):
+    adding_user_to_db(callback)
     if users_db[callback.from_user.id]['page'] < len(book):
         users_db[callback.from_user.id]['page'] += 1
         text = book[users_db[callback.from_user.id]['page']]
@@ -101,6 +107,7 @@ async def process_forward_press(callback: CallbackQuery):
 # во время взаимодействия пользователя с сообщением-книгой
 @router.callback_query(F.data == 'backward')
 async def process_backward_press(callback: CallbackQuery):
+    adding_user_to_db(callback)
     if users_db[callback.from_user.id]['page'] > 1:
         users_db[callback.from_user.id]['page'] -= 1
         text = book[users_db[callback.from_user.id]['page']]
@@ -119,6 +126,7 @@ async def process_backward_press(callback: CallbackQuery):
 # с номером текущей страницы и добавлять текущую страницу в закладки
 @router.callback_query(lambda x: '/' in x.data and x.data.replace('/', '').isdigit())
 async def process_page_press(callback: CallbackQuery):
+    adding_user_to_db(callback)
     users_db[callback.from_user.id]['bookmarks'].add(
         users_db[callback.from_user.id]['page']
     )
@@ -130,6 +138,7 @@ async def process_page_press(callback: CallbackQuery):
 @router.callback_query(IsDigitCallbackData())
 async def process_bookmark_press(callback: CallbackQuery):
     text = book[int(callback.data)]
+    adding_user_to_db(callback)
     users_db[callback.from_user.id]['page'] = int(callback.data)
     await callback.message.edit_text(
         text=text,
@@ -146,12 +155,18 @@ async def process_bookmark_press(callback: CallbackQuery):
 # "редактировать" под списком закладок
 @router.callback_query(F.data == 'edit_bookmarks')
 async def process_edit_press(callback: CallbackQuery):
-    await callback.message.edit_text(
-        text=LEXICON[callback.data],
-        reply_markup=create_edit_keyboard(
-            *users_db[callback.from_user.id]["bookmarks"]
+    adding_user_to_db(callback)
+    if not users_db[callback.from_user.id]["bookmarks"]:
+        await callback.message.edit_text(
+            text=LEXICON['no_bookmarks']
         )
-    )
+    else:
+        await callback.message.edit_text(
+            text=LEXICON[callback.data],
+            reply_markup=create_edit_keyboard(
+                *users_db[callback.from_user.id]["bookmarks"]
+            )
+        )
     await callback.answer()
 
 
@@ -167,6 +182,7 @@ async def process_cancel_press(callback: CallbackQuery):
 # с закладкой из списка закладок к удалению
 @router.callback_query(IsDelBookmarkCallbackData())
 async def process_del_bookmark_press(callback: CallbackQuery):
+    adding_user_to_db(callback)
     users_db[callback.from_user.id]['bookmarks'].remove(
         int(callback.data[:-3])
     )
