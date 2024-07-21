@@ -3,10 +3,14 @@ from aiogram.filters import CommandStart
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import (CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, Message)
+from environs import Env
 
-# Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
-# полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
+
+env = Env()
+env.read_env()
+BOT_TOKEN = env.str("BOT_TOKEN")
+
+
 
 # Создаем объекты бота и диспетчера
 bot = Bot(token=BOT_TOKEN)
@@ -15,7 +19,7 @@ dp = Dispatcher()
 
 # Создаем свой класс фабрики коллбэков, указывая префикс
 # и структуру callback_data
-class GoodsCallbackFactory(CallbackData, prefix="goods"):
+class GoodsCallbackFactory(CallbackData, prefix='goods'):
     category_id: int
     subcategory_id: int
     item_id: int
@@ -34,9 +38,9 @@ button_1 = InlineKeyboardButton(
 button_2 = InlineKeyboardButton(
     text='Категория 2',
     callback_data=GoodsCallbackFactory(
-        category_id=2,
-        subcategory_id=0,
-        item_id=0
+    category_id=2,
+    subcategory_id=0,
+    item_id=0
     ).pack()
 )
 

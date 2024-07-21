@@ -5,7 +5,6 @@ from aiogram.filters import CommandStart
 from aiogram.types import (CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, Message)
 from environs import Env
-from aiogram import F
 from aiogram.types import CallbackQuery
 
 
