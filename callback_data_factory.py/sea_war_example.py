@@ -6,10 +6,11 @@ from aiogram.filters import CommandStart
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import (CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, Message)
+from environs import Env
 
-# Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
-# полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
+env = Env()
+env.read_env()
+BOT_TOKEN = env.str("BOT_TOKEN")
 
 # Создаем объекты бота и диспетчера
 bot = Bot(token=BOT_TOKEN)
@@ -100,11 +101,11 @@ async def process_category_press(callback: CallbackQuery,
     field = users[callback.from_user.id]['field']
     ships = users[callback.from_user.id]['ships']
     if field[callback_data.x][callback_data.y] == 0 and \
-    ships[callback_data.x][callback_data.y] == 0:
+            ships[callback_data.x][callback_data.y] == 0:
         answer = LEXICON['miss']
         field[callback_data.x][callback_data.y] = 1
     elif field[callback_data.x][callback_data.y] == 0 and \
-    ships[callback_data.x][callback_data.y] == 1:
+            ships[callback_data.x][callback_data.y] == 1:
         answer = LEXICON['hit']
         field[callback_data.x][callback_data.y] = 2
     else:
