@@ -1,12 +1,17 @@
 from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
+from environs import Env
 
-# Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
-# полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
+env = Env() #Env() создает новый экземпляр класса Env, который предоставляет методы для работы с переменными среды.
+env.read_env() #загружает переменные среды из файла .env в объект env
+BOT_TOKEN = env.str("BOT_TOKEN") #присваивает переменной BOT_TOKEN значение переменной среды с именем BOT_TOKEN.
 
-bot = Bot(BOT_TOKEN)
+# Создаем объекты бота и диспетчера
+bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(
+        parse_mode=ParseMode.HTML))
 dp = Dispatcher()
 
 

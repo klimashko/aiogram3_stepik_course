@@ -1,12 +1,18 @@
 from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
+from environs import Env
 
-# Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
-# полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
+env = Env()  # Env() создает новый экземпляр класса Env, который предоставляет методы для работы с переменными среды.
+env.read_env()  # загружает переменные среды из файла .env в объект env
+BOT_TOKEN = env.str(
+    "BOT_TOKEN")  # присваивает переменной BOT_TOKEN значение переменной среды с именем BOT_TOKEN.
 
-bot = Bot(BOT_TOKEN, parse_mode='MarkdownV2')
+bot = Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN_V2))
+# bot = Bot(BOT_TOKEN)
+
 dp = Dispatcher()
 
 
@@ -16,19 +22,19 @@ async def process_start_command(message: Message):
     await message.answer(
         text='Привет\!\n\nЯ бот, демонстрирующий как работает разметка '
              'MardownV2\. Отправь команду из списка ниже:\n\n'
-             '/bold \- жирный текст\n'
-             '/italic \- наклонный текст\n'
-             '/underline \- подчеркнутый текст\n'
-             '/strike \- зачеркнутый текст\n'
-             '/spoiler \- спойлер\n'
-             '/link \- внешняя ссылка\n'
-             '/tglink \- внутренняя ссылка\n'
-             '/code \- моноширинный текст\n'
-             '/pre \- предварительно форматированный текст\n'
-             '/precode \- предварительно форматированный блок кода\n'
-             '/boldi \- жирный наклонный текст\n'
-             '/iu \- наклонный подчеркнутый текст\n'
-             '/biu \- жирный наклонный подчеркнутый текст'
+             '/bold  жирный текст\n'
+             '/italic  наклонный текст\n'
+             '/underline  подчеркнутый текст\n'
+             '/strike  зачеркнутый текст\n'
+             '/spoiler  спойлер\n'
+             '/link  внешняя ссылка\n'
+             '/tglink  внутренняя ссылка\n'
+             '/code  моноширинный текст\n'
+             '/pre  предварительно форматированный текст\n'
+             '/precode  предварительно форматированный блок кода\n'
+             '/boldi  жирный наклонный текст\n'
+             '/iu  наклонный подчеркнутый текст\n'
+             '/biu  жирный наклонный подчеркнутый текст'
     )
 
 
@@ -38,19 +44,19 @@ async def process_help_command(message: Message):
     await message.answer(
         text='Я бот, демонстрирующий как работает разметка '
              'MardownV2\. Отправь команду из списка ниже:\n\n'
-             '/bold \- жирный текст\n'
-             '/italic \- наклонный текст\n'
-             '/underline \- подчеркнутый текст\n'
-             '/strike \- зачеркнутый текст\n'
-             '/spoiler \- спойлер\n'
-             '/link \- внешняя ссылка\n'
-             '/tglink \- внутренняя ссылка\n'
-             '/code \- моноширинный текст\n'
-             '/pre \- предварительно форматированный текст\n'
-             '/precode \- предварительно форматированный блок кода\n'
-             '/boldi \- жирный наклонный текст\n'
-             '/iu \- наклонный подчеркнутый текст\n'
-             '/biu \- жирный наклонный подчеркнутый текст'
+             '/bold  жирный текст\n'
+             '/italic  наклонный текст\n'
+             '/underline  подчеркнутый текст\n'
+             '/strike  зачеркнутый текст\n'
+             '/spoiler  спойлер\n'
+             '/link  внешняя ссылка\n'
+             '/tglink  внутренняя ссылка\n'
+             '/code  моноширинный текст\n'
+             '/pre  предварительно форматированный текст\n'
+             '/precode  предварительно форматированный блок кода\n'
+             '/boldi  жирный наклонный текст\n'
+             '/iu  наклонный подчеркнутый текст\n'
+             '/biu  жирный наклонный подчеркнутый текст'
     )
 
 
@@ -58,7 +64,7 @@ async def process_help_command(message: Message):
 @dp.message(Command(commands='bold'))
 async def process_bold_command(message: Message):
     await message.answer(
-        text='\*Это жирный текст\*:\n'
+        text='\*Это жирный текст\*\:\n'
              '*Это жирный текст*'
     )
 
@@ -160,7 +166,8 @@ async def process_boldi_command(message: Message):
 async def process_iu_command(message: Message):
     await message.answer(
         text='\_\_\_Это наклонный подчеркнутый текст\_\\\\r\_\_:\n'
-             '___Это наклонный подчеркнутый текст_\r__'
+             '___Это наклонный подчеркнутый текст_\r__\n'
+             '___Пример форматированного текста_\r__'
     )
 
 
