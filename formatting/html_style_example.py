@@ -1,12 +1,17 @@
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
+from environs import Env
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 
-# Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
-# полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
+env = Env() #Env() создает новый экземпляр класса Env, который предоставляет методы для работы с переменными среды.
+env.read_env() #загружает переменные среды из файла .env в объект env
+BOT_TOKEN = env.str("BOT_TOKEN") #присваивает переменной BOT_TOKEN значение переменной среды с именем BOT_TOKEN.
 
-bot = Bot(BOT_TOKEN, parse_mode='HTML')
+# Создаем объекты бота и диспетчера
+bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(
+        parse_mode=ParseMode.HTML))
 dp = Dispatcher()
 
 
@@ -225,6 +230,13 @@ async def send_echo(message: Message):
              'отправь команду /help'
     )
 
+# @dp.message(Command(commands='6'))
+# async def proverka_6(message: Message):
+#     await bot.send_message(
+#         chat_id=588952161,
+#         text='<ins><i>Пример форматированного текста</i></ins>',
+#         parse_mode='HTML'
+#     )
 
 # Запускаем поллинг
 if __name__ == '__main__':
