@@ -1,17 +1,27 @@
+import logging
 import random
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
 from aiogram.types import (CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, Message)
+from environs import Env
 
-# Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
-# полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
 
-bot = Bot(BOT_TOKEN)
+env = Env() #Env() создает новый экземпляр класса Env, который предоставляет методы для работы с переменными среды.
+env.read_env() #загружает переменные среды из файла .env в объект env
+BOT_TOKEN = env.str("BOT_TOKEN") #присваивает переменной BOT_TOKEN значение переменной среды с именем BOT_TOKEN.
+
+# Создаем объекты бота и диспетчера
+bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
+# Настраиваем базовую конфигурацию логирования
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='[%(asctime)s] #%(levelname)-8s %(filename)s:'
+           '%(lineno)d - %(name)s - %(message)s'
+)
 
 jokes: dict[int, str] = {
     1: 'с хабра, описание фильмов Матрица\n\nСудя по всему, в городе машин либо очень либеральный мэр, либо очень криворукие сисадмины. Иначе как объяснить, что свободные люди беспрепятственно подключаются к вражеской ИТ-системе? Причем удаленно из тарантаса, летающего по канализации! Т.е. мало того, что у машин в сточных трубах развернут высокоскоростной Wi-Fi, так они еще и пускают в свою сеть всех подряд, позволяя неавторизованным пользователям получать данные из системы, вносить в нее изменения и общаться между собой. Красота!',
@@ -41,21 +51,21 @@ async def process_start_command(message: Message):
     )
 
 
-# Этот хэндлер будет срабатывать на нажатие кнопки "Хочу еще!" и
-# отправлять в чат новое сообщение, не удаляя старое
-@dp.callback_query(F.data == 'more')
-async def process_more_press(callback: CallbackQuery):
-    keyboard: list[list[InlineKeyboardButton]] = [
-        [InlineKeyboardButton(text='Хочу еще!', callback_data='more')]
-    ]
-    markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
-    # Отвечаем на callback, чтобы убрать часики
-    await callback.answer()
-    # Отправляем в чат новое сообщение с шуткой
-    await callback.message.answer(
-        text=jokes[random_joke()],
-        reply_markup=markup
-    )
+# # Этот хэндлер будет срабатывать на нажатие кнопки "Хочу еще!" и
+# # отправлять в чат новое сообщение, не удаляя старое
+# @dp.callback_query(F.data == 'more')
+# async def process_more_press(callback: CallbackQuery):
+#     keyboard: list[list[InlineKeyboardButton]] = [
+#         [InlineKeyboardButton(text='Хочу еще!', callback_data='more')]
+#     ]
+#     markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+#     # Отвечаем на callback, чтобы убрать часики
+#     await callback.answer()
+#     # Отправляем в чат новое сообщение с шуткой
+#     await callback.message.answer(
+#         text=jokes[random_joke()],
+#         reply_markup=markup
+#     )
 
 
 # # Этот хэндлер будет срабатывать на нажатие кнопки "Хочу еще!" и
@@ -75,19 +85,19 @@ async def process_more_press(callback: CallbackQuery):
 #     )
 
 
-# # Этот хэндлер будет срабатывать на нажатие кнопки "Хочу еще!"
-# # и редактировать старое сообщение
-# @dp.callback_query(F.data == 'more')
-# async def process_more_press(callback: CallbackQuery):
-#     keyboard: list[list[InlineKeyboardButton]] = [
-#         [InlineKeyboardButton(text='Хочу еще!', callback_data='more')]
-#     ]
-#     markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
-#     # Редактируем сообщение
-#     await callback.message.edit_text(
-#         text=jokes[random_joke()],
-#         reply_markup=markup
-#     )
+# Этот хэндлер будет срабатывать на нажатие кнопки "Хочу еще!"
+# и редактировать старое сообщение
+@dp.callback_query(F.data == 'more')
+async def process_more_press(callback: CallbackQuery):
+    keyboard: list[list[InlineKeyboardButton]] = [
+        [InlineKeyboardButton(text='Хочу еще!', callback_data='more')]
+    ]
+    markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+    # Редактируем сообщение
+    await callback.message.edit_text(
+        text=jokes[random_joke()],
+        reply_markup=markup
+    )
 
 
 # Этот хэндлер будет срабатывать на любые сообщения, кроме команд
