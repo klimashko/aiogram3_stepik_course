@@ -1,10 +1,14 @@
+import json
+
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
+from environs import Env
 
-# Вместо BOT TOKEN HERE нужно вставить токен вашего бота,
-# полученный у @BotFather
-BOT_TOKEN = 'BOT TOKEN HERE'
+
+env = Env() #Env() создает новый экземпляр класса Env, который предоставляет методы для работы с переменными среды.
+env.read_env() #загружает переменные среды из файла .env в объект env
+BOT_TOKEN = env.str("BOT_TOKEN") #присваивает переменной BOT_TOKEN значение переменной среды с именем BOT_TOKEN.
 
 # Создаем объекты бота и диспетчера
 bot = Bot(token=BOT_TOKEN)
@@ -32,6 +36,7 @@ async def process_help_command(message: Message):
 async def send_echo(message: Message):
     try:
         await message.send_copy(chat_id=message.chat.id)
+        print(message.model_dump_json())
     except TypeError:
         await message.reply(
             text='Данный тип апдейтов не поддерживается '
