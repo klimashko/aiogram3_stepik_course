@@ -1,5 +1,3 @@
-import  json
-
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
@@ -19,9 +17,6 @@ dp = Dispatcher()
 @dp.message(Command(commands='start'))
 async def process_start_command(message: Message):
     await message.answer('Привет!\nМеня зовут Get file_id bot!\nпришли мне сообщение и я отправлю тебе тип сообщения и его file_id')
-
-
-
 
 
 # Этот хэндлер будет срабатывать на любые ваши сообщения,
@@ -58,6 +53,10 @@ async def to_get_message_file_id(message: Message):
         animation_id = message.animation.file_id
         await message.answer(text=f'animation_id = {animation_id}')
         print(f'animation_id = {animation_id}')
+
+    else:
+        await message.answer(text='тип этого сообщения не является одним из: photo, video, document, audio, voice, animation')
+        print('тип этого сообщения не является одним из: photo, video, document, audio, voice, animation')
 
 if __name__ == '__main__':
     dp.run_polling(bot)
